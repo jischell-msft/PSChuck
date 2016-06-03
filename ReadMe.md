@@ -2,6 +2,7 @@
 ---
 *Digging the pit of success for PowerShell module and function creation*
 
+## Synopsis
 Remembering to build correctly formatted comment based help, adding notes, using tests, adding a license - all good things to do, but why spend time thinking about them? 
 
 PSChuck is a personal project to reduce the psychic load of function and module creation, in addition to encouraging best (better) practices for function and module development. Spend time thinking about the next great module to write, not how to update the manifest.
@@ -15,4 +16,30 @@ PSChuck is a personal project to reduce the psychic load of function and module 
 
 - **Hanselman's Third Law of Attention:** *Ignore as much as you can, stay focused on thing that captures your attention. You want to create that thing, and then when you've created that thing, exploit it in as many ways as possible* -Scott Hanselman 
 
- 
+### Functionality 
+**New-Module**
+
+Creates the following directory and files:
+
+	.\ModuleName
+	    ModuleName.psm1
+	    ModuleName.psd1
+	    Readme.md
+	    License.txt
+	    Changes.txt
+		.\build
+		.\docs
+	        functionToExport.md
+	        functionToNotExport.md
+		.\en-us
+	    	about_ModuleName.help.txt
+	    .\private
+	        functionToNotExport.ps1
+		.\public
+	        functionToExport.ps1
+	    .\tests
+	        functionToExport.tests.ps1
+	        
+ **New-Function**
+
+Content here

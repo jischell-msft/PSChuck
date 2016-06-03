@@ -1,0 +1,25 @@
+TOPIC
+    about_PSChuck
+    
+SHORT DESCRIPTION
+    Digging the pit of success for PowerShell module and function creation.
+    
+LONG DESCRIPTION
+    Automate good habits for the creation of functions and modules, including:
+    - using approved verbs for functions
+    - including licenses for functions and modules
+    - including the author information
+    - building advanced functions
+    - using version numbers for modules *and* functions 
+    - change notes for modules *and* functions
+    - testing for help, and that the help is filled out
+    
+KEYWORDS
+    Function
+    Module
+    New-Function
+    New-Module
+    Update-ModuleManifest
+    
+SEE ALSO
+    

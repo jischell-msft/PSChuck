@@ -1,5 +1,33 @@
-function new-module {
+function New-Module {
 <#
+.Synopsis
+Create a new module.
+
+.Description
+Create a new module.
+
+.Example
+    PS > new-module 
+   
+Description
+-----------
+does something
+
+.Parameter ModuleName
+Specifies name to be used for the module.
+
+.Parameter Author
+Specifies author of the module.
+
+.Parameter Version
+Specifies the version of the module.
+
+.Parameter License
+Specifies the license to release the module under.
+
+.Parameter Path
+Specifies the parent path where the module folder and files will be created.
+ 
 
 .Notes
 
@@ -27,10 +55,13 @@ SOFTWARE.
 
 #### Name:       new-module
 #### Author:     Jim Schell
-#### Version:    0.1.0
+#### Version:    0.1.1
 #### License:    MIT
 
 ### Change Log
+
+###### 2016-06-03::0.1.1
+- added the rest of the help sections (bare). need to go back and fill in examples, synopsis, description
 
 ###### 2016-06-01::0.1.0
 - initial creation
@@ -43,7 +74,7 @@ SOFTWARE.
     Param(
         [Parameter(Mandatory = $true)]
         [String]
-        $moduleName
+        $ModuleName,
         
         [Parameter(Mandatory = $true)]
         [String]
@@ -76,7 +107,6 @@ SOFTWARE.
         })]
         [String]
         $License = "MIT",
-        
         
         [Parameter(Mandatory = $false)]
         $Path = $pwd
