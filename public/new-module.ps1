@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-function new-module {
-<#
-=======
 function New-Module {
 <#
 .Synopsis
@@ -32,8 +28,6 @@ Specifies the license to release the module under.
 .Parameter Path
 Specifies the parent path where the module folder and files will be created.
  
->>>>>>> dev
-
 .Notes
 
 The MIT License (MIT) 
@@ -58,23 +52,17 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 
-#### Name:       new-module
+#### Name:       New-Module
 #### Author:     Jim Schell
-<<<<<<< HEAD
-#### Version:    0.1.0
-=======
 #### Version:    0.1.1
->>>>>>> dev
 #### License:    MIT
 
 ### Change Log
 
-<<<<<<< HEAD
-=======
+
 ###### 2016-06-03::0.1.1
 - added the rest of the help sections (bare). need to go back and fill in examples, synopsis, description
 
->>>>>>> dev
 ###### 2016-06-01::0.1.0
 - initial creation
 - building out the rest of scaffolding
@@ -86,11 +74,7 @@ SOFTWARE.
     Param(
         [Parameter(Mandatory = $true)]
         [String]
-<<<<<<< HEAD
-        $moduleName
-=======
         $ModuleName,
->>>>>>> dev
         
         [Parameter(Mandatory = $true)]
         [String]
@@ -123,11 +107,7 @@ SOFTWARE.
         })]
         [String]
         $License = "MIT",
-        
-<<<<<<< HEAD
-        
-=======
->>>>>>> dev
+
         [Parameter(Mandatory = $false)]
         $Path = $pwd
     )
