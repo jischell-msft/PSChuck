@@ -3,23 +3,25 @@ external help file:
 schema: 2.0.0
 ---
 
-# new-module
+# New-ModuleOutline
 ## SYNOPSIS
-Create a new module.
+Create a new module outline.
 
 ## SYNTAX
 
 ```
-new-module [-ModuleName] <String> [-Author] <String> [[-Version] <Version>] [-License] <String>
+New-ModuleOutline [-ModuleName] <String> [-Author] <String> [[-Version] <Version>] [-License] <String>
  [[-Path] <Object>]
 ```
+
+## DESCRIPTION
+Create a new module outline.
 
 ## EXAMPLES
 
 ### -------------------------- EXAMPLE 1 --------------------------
-```
-new-module
-```
+
+	PS > new-moduleOutline
 
 Description
 -----------
@@ -102,6 +104,10 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+## INPUTS
+
+## OUTPUTS
+
 ## NOTES
 The MIT License \(MIT\) 
 Copyright \(c\) 2016 Jim Schell
@@ -126,12 +132,15 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 
-#### Name:       new-module
+#### Name:       New-ModuleOutline
 #### Author:     Jim Schell
-#### Version:    0.1.1
+#### Version:    0.1.2
 #### License:    MIT
 
 ### Change Log
+
+###### 2016-06-03::0.1.2
+- renamed to 'ModuleOutline' from 'Module'
 
 ###### 2016-06-03::0.1.1
 - added the rest of the help sections \(bare\).
@@ -144,4 +153,5 @@ need to go back and fill in examples, synopsis, description
 ## RELATED LINKS
 
 [Online Version:]()
+
 

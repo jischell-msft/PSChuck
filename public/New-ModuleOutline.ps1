@@ -1,13 +1,13 @@
-function New-Module {
+function New-ModuleOutline {
 <#
 .Synopsis
-Create a new module.
+Create a new module outline.
 
 .Description
-Create a new module.
+Create a new module outline.
 
 .Example
-    PS > new-module 
+    PS > new-moduleOutline 
    
 Description
 -----------
@@ -52,13 +52,15 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 
-#### Name:       New-Module
+#### Name:       New-ModuleOutline
 #### Author:     Jim Schell
-#### Version:    0.1.1
+#### Version:    0.1.2
 #### License:    MIT
 
 ### Change Log
 
+###### 2016-06-03::0.1.2
+- renamed to 'ModuleOutline' from 'Module'
 
 ###### 2016-06-03::0.1.1
 - added the rest of the help sections (bare). need to go back and fill in examples, synopsis, description
