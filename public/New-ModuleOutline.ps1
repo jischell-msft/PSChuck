@@ -111,6 +111,10 @@ SOFTWARE.
         $License = "MIT",
 
         [Parameter(Mandatory = $false)]
+        [int]
+        $MinimumPSVersion = 3
+        
+        [Parameter(Mandatory = $false)]
         $Path = $pwd
     )
     
@@ -134,10 +138,13 @@ SOFTWARE.
         
     )
     foreach($folder in $foldersToCreate){
-        mkdir $folder
+        New-Item -Path $folder -ItemType Directory
     }
     
     $templatePath = "$psScriptRoot\templates"
+    
+    #--- Copy module with appropriate name
+    Copy-Item -path "$templatePath\ModuleName.psm1" -destination "$path\$moduleName\$($moduleName).psm1"
     
     #--- Getting license details...
     $licenseFull = Import-LocalizedData -baseDirectory "$psScriptRoot\LICENSE" -fileName "LICENSE_$($licence).psd1"
@@ -152,32 +159,29 @@ SOFTWARE.
     #--- Building About_Help
     $aboutHelpContent = Get-Content -path "$templatePath\about_ModuleName.help.txt"
     $aboutHelpContent = $aboutHelpContent -replace '%%MODULE_NAME%%', $moduleName
+    New-Item -path "$path\$moduleName\en-us\about_$($moduleName).help.txt" -ItemType File -Value $aboutHelpContent
     
-    $aboutHelpFileName = "about_$($moduleName).help.txt"
-    $aboutHelpOutParam = $defaultOutFileParam
-    $aboutHelpOutParam += @{
-        inputObject = $aboutHelpContent
-        filePath = "$path\$moduleName\en-us\$aboutHelpFileName"
-    }
-    
-    Out-File @aboutHelpOutParam
-    #--- Done with About_Help
-    
-    #--- Copy module with appropriate name
-    Copy-Item -path "$templatePath\ModuleName.psm1" -destination "$path\$moduleName\$($moduleName).psm1"
-    
-    #---
-    
+    #--- Build ReadMe
     $readmeStart = Get-Content -path "$templatePath\ReadMe.md" -raw
     $readmeStart = $readmeStart -replace '%%ModuleName%%', $moduleName
-    
+    $readmeStart = $readmeStart -replace '%%MinimumPSVersion%%', $MinimumPSVersion
     New-Item -path "$path\$moduleName\ReadMe.md" -ItemType File -Value $readmeStart
     
+    #--- Build Changes
     $changesStart = Get-Content -path "$templatePath\Changes.txt" -raw
     $changesStart = $changesStart -replace '%%DATE%%',$dateYMD
     $changesStart = $changesStart -replace '%%Version%%',$version
-    
     New-Item -path "$path\$moduleName\Changes.txt" -ItemType File -Value $changesStart
+    
+    #--- Build starter functions
+    $functionSkeleton = Get-Content -path "$templatePath\functionSample.ps1" -raw
+    New-Item -path "$path\$moduleName\public\functionToExport.ps1" -ItemType File -Value $functionSkeleton
+    New-Item -path "$path\$moduleName\private\functionNotToExport.ps1" -ItemType File -Value $functionSkeleton
+    
+    #--- Build empty docs for starter functions
+    
+    New-Item -path "$path\$moduleName\docs\functionToExport.md" -ItemType File
+    New-Item -path "$path\$moduleName\docs\functionNotToExport.md" -ItemType File
     
     
     
@@ -185,26 +189,13 @@ SOFTWARE.
     folder/ file out:
     
     .\ModuleName
-        .\en-us
-            about_ModuleName.help.txt
-        .\public
-            functionToExport.ps1
-        .\private
-            functionToNotExport.ps1
+
         .\tests
             functionToExport.tests.ps1
             ...
-        .\docs
-            functionToExport.md
-            functionToNotExport.md
-        .\build
-            (build latest version for... nuget? psgallery?)
         
-        ModuleName.psm1
         ModuleName.psd1
-        Readme.md
-        License.txt
-        Changes.txt
+
     #---
     moduleManifest:
     
