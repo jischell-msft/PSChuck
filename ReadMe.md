@@ -7,7 +7,7 @@ Remembering to build correctly formatted comment based help, adding notes, using
 PSChuck is a personal project to reduce the psychic load of function and module creation, in addition to encouraging best (better) practices for function and module development. Spend time thinking about the next great module to write, not how to update the manifest.
 
 ### Guiding Principles
-- **The Pit of Success:** *in stark contrast to a summit, a peak, or a journey across a desert to find victory through many trials and surprises, we want our customers to simply fall into winning practices by using our platform and frameworks. To the extent that we make it easy to get into trouble we fail.* -Rico Mariani
+- **The Pit of Success:** *In stark contrast to a summit, a peak, or a journey across a desert to find victory through many trials and surprises, we want our customers to simply fall into winning practices by using our platform and frameworks. To the extent that we make it easy to get into trouble we fail.* -Rico Mariani
 
 - **Hanselman's First Law of Attention:** *It's not what you (do), it's what you ignore.* -Scott Hansleman
 
