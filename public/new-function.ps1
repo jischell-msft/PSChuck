@@ -90,10 +90,14 @@ SOFTWARE.
 
 #### Name:       new-function
 #### Author:     Jim Schell
-#### Version:    0.1.6
+#### Version:    0.1.7
 #### License:    MIT
 
 ### Change Log
+
+
+###### 2016-06-06::0.1.7
+- updated to have verb, noun and parameters capitalize the first letter
 
 ###### 2016-06-02::0.1.6
 - updated how licenses are loaded, from within the function to reading psd1 files in a folder named 'LICENSE'. New method includes license name (full and short) as well as the URI for the license.
@@ -193,13 +197,21 @@ SOFTWARE.
     
     $dateYMD = get-date -UFormat %Y-%m-%d
     $dateYear = get-date -UFormat %Y
-    $functionName = "$($verb)-$($noun)"
-    $fileName = "$($verb)-$($noun).ps1"
+    
     $versionAsString = $version.toString()
     
+    $verb = "$($verb.Substring(0,1).ToUpper()$($verb.Substring(1).ToLower())"
+    $noun = "$($noun.Substring(0,1).ToUpper()$($noun.Substring(1).ToLower())"
+    $functionName = "$($verb)-$($noun)"
+    $fileName = "$($verb)-$($noun).ps1"
     if( !($functionParam) ){
         $functionParam = @("param1","param2")
     }
+    foreach($param in $functionParam){
+        $param = $param = "$($param.Substring(0,1).ToUpper()$($param.Substring(1).ToLower())"
+        $functionParamUpper += @($param)
+    }
+    $functionParam = $functionParamUpper
     
     $functionOpen = @"
 fuction $($verb)-$($noun){
