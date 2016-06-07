@@ -11,7 +11,7 @@ Create a new function test, enumerate non-common parameters and add to the test.
 
 Description
 -----------
-Creates a test for the function "get-verb".
+Creates a test for the function "get-verb", returns the content as an array of strings.
 
 .Outputs
 Returns a the test as an array of strings.
