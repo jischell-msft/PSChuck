@@ -17,7 +17,7 @@ PSChuck is a personal project to reduce the psychic load of function and module 
 - **Hanselman's Third Law of Attention:** *Ignore as much as you can, stay focused on thing that captures your attention. You want to create that thing, and then when you've created that thing, exploit it in as many ways as possible* -Scott Hanselman 
 
 ### Functionality 
-**New-Module**
+**New-ModuleOutline**
 
 Creates the following directory and files:
 
@@ -30,16 +30,23 @@ Creates the following directory and files:
 		.\build
 		.\docs
 	        functionToExport.md
-	        functionToNotExport.md
+	        functionNotToExport.md
 		.\en-us
 	    	about_ModuleName.help.txt
 	    .\private
-	        functionToNotExport.ps1
+	        functionNotToExport.ps1
 		.\public
 	        functionToExport.ps1
 	    .\tests
 	        functionToExport.tests.ps1
+			help.functionToExport.tests.ps1
+			functionNotToExport.tests.ps1
+			help.functionNotToExport.tests.ps1
 	        
  **New-Function**
+
+Content here
+
+**Update-ModuleManifest**
 
 Content here

@@ -55,11 +55,14 @@ Specifies the license to use, from the set of licenses available and formated in
 .Parameter LicenseToFile
 Outputs the content of the license to a file in the same directory as the function.
 
+.Parameter PassThru
+Returns the content of the newly created function. By default, this cmdlet will not generate output to the console.
+
 .Parameter Force
 By default, existing files with the same name will not be over written. This forces the update.
 
-.Parameter PassThru
-Returns the content of the newly created function. By default, this cmdlet will not generate output to the console.
+.Parameter NoTest
+By default, all functions will be provisioned with two tests - one that tests for complete help, and one 'starter' test skeleton. This forces no test files to be created.
 
 .Parameter Path
 Specifies the location where the file(s) should be created. Defaults to the present working directory.
@@ -90,10 +93,19 @@ SOFTWARE.
 
 #### Name:       new-function
 #### Author:     Jim Schell
-#### Version:    0.1.6
+#### Version:    0.1.9
 #### License:    MIT
 
 ### Change Log
+
+###### 2016-06-06::0.1.9
+- moved creating new tests (not the boilerplate help test) to separate function 'New-FunctionTest'
+
+###### 2016-06-06::0.1.8
+- updated to include two tests by default, and added 'noTest' switch to override behavior
+
+###### 2016-06-06::0.1.7
+- updated to have verb, noun and parameters capitalize the first letter
 
 ###### 2016-06-02::0.1.6
 - updated how licenses are loaded, from within the function to reading psd1 files in a folder named 'LICENSE'. New method includes license name (full and short) as well as the URI for the license.
@@ -185,6 +197,10 @@ SOFTWARE.
         [Parameter(Mandatory = $false)]
         [switch]
         $Force,
+        
+        [Parameter(Mandatory = $false)]
+        [switch]
+        $noTest,
 
         [Parameter(Mandatory = $false)]
         $Path = $pwd
@@ -193,13 +209,21 @@ SOFTWARE.
     
     $dateYMD = get-date -UFormat %Y-%m-%d
     $dateYear = get-date -UFormat %Y
-    $functionName = "$($verb)-$($noun)"
-    $fileName = "$($verb)-$($noun).ps1"
+    
     $versionAsString = $version.toString()
     
+    $verb = "$($verb.Substring(0,1).ToUpper())$($verb.Substring(1).ToLower())"
+    $noun = "$($noun.Substring(0,1).ToUpper())$($noun.Substring(1).ToLower())"
+    $functionName = "$($verb)-$($noun)"
+    $fileName = "$($verb)-$($noun).ps1"
     if( !($functionParam) ){
         $functionParam = @("param1","param2")
     }
+    foreach($param in $functionParam){
+        $param = $param = "$($param.Substring(0,1).ToUpper())$($param.Substring(1).ToLower())"
+        $functionParamUpper += @($param)
+    }
+    $functionParam = $functionParamUpper
     
     $functionOpen = @"
 fuction $($verb)-$($noun){
@@ -304,6 +328,7 @@ $uri
 "@
         $paramValues += $newParam
     }
+    
     $licenceFull = Import-LocalizedData -baseDirectory "$psScriptRoot\LICENSE" -fileName "LICENSE_$($licence).psd1"
     $licenseContent = $licenceFull.licenseContent
     $licenseContent = $licenseContent -replace '%%YEAR%%',$dateYear
@@ -325,6 +350,24 @@ $uri
     $functionOutput += $commentBasedHelp
     $functionOutput += $functionPreamble -replace '%%PARAM_VALUES%%',$paramValues
     $functionOutput += $functionBody
+    
+    
+    
+    if( !($noTest) ){
+        if( !(Test-Path "$($path)\Tests") ){
+            New-Item -Path $path -Name "Tests" -ItemType Directory
+        }
+        $testPath = "$($path)\Tests"
+        
+        $helpTestContent = get-content -path "$psScriptRoot\Templates\help.FunctionName.tests.ps1" -raw
+        $helpTestContent = $helpTestContent -replace "%%FUNCTION_NAME%%", $functionName
+        $helpTestFile = "help.$($functionName).tests.ps1"
+        Set-Content -Path "$($testPath)\$($helpTestFile)" -value $helpTestContent -encoding UTF8
+        
+        $startTestContent = New-FunctionTest -path "$($path)" -FunctionName $functionName
+        $startHelpFile = "$($functionName).tests.ps1"
+        Set-Content -Path "$($testPath)\$($startHelpFile)" -value $startHelpFile -encoding UTF8
+    }
     
     $writeFunctionParam = @{
         InputObject = $functionOutput 

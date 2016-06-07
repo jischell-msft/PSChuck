@@ -25,6 +25,12 @@ Specifies the version of the module.
 .Parameter License
 Specifies the license to release the module under.
 
+.Parameter MinimumPSVersion
+Specifies the minimum version of PowerShell required to load the module.
+
+.Parameter Description
+Optional description to include with the module manifest.
+
 .Parameter Path
 Specifies the parent path where the module folder and files will be created.
  
@@ -54,10 +60,13 @@ SOFTWARE.
 
 #### Name:       New-ModuleOutline
 #### Author:     Jim Schell
-#### Version:    0.1.2
+#### Version:    0.1.3
 #### License:    MIT
 
 ### Change Log
+
+###### 2016-06-06::0.1.3
+- largely completed first pass of functionality
 
 ###### 2016-06-03::0.1.2
 - renamed to 'ModuleOutline' from 'Module'
@@ -115,6 +124,10 @@ SOFTWARE.
         $MinimumPSVersion = 3
         
         [Parameter(Mandatory = $false)]
+        [String]
+        $Description,
+        
+        [Parameter(Mandatory = $false)]
         $Path = $pwd
     )
     
@@ -144,7 +157,7 @@ SOFTWARE.
     $templatePath = "$psScriptRoot\templates"
     
     #--- Copy module with appropriate name
-    Copy-Item -path "$templatePath\ModuleName.psm1" -destination "$path\$moduleName\$($moduleName).psm1"
+    Set-Content -path "$path\$moduleName\$($moduleName).psm1" -Value "$templatePath\ModuleName.psm1" -Encoding UTF8
     
     #--- Getting license details...
     $licenseFull = Import-LocalizedData -baseDirectory "$psScriptRoot\LICENSE" -fileName "LICENSE_$($licence).psd1"
@@ -154,77 +167,86 @@ SOFTWARE.
     $licenseName = $licenseFull.licenseName
     $licenseURI = $licenseFull.licenseURI
     
-    New-Item -path "$path\$moduleName\LICENSE.txt" -ItemType File -Value $licenseContent
+    Set-Content -path "$path\$moduleName\LICENSE.txt" -Value $licenseContent -Encoding UTF8
     
     #--- Building About_Help
     $aboutHelpContent = Get-Content -path "$templatePath\about_ModuleName.help.txt"
     $aboutHelpContent = $aboutHelpContent -replace '%%MODULE_NAME%%', $moduleName
-    New-Item -path "$path\$moduleName\en-us\about_$($moduleName).help.txt" -ItemType File -Value $aboutHelpContent
+    Set-Content -path "$path\$moduleName\en-us\about_$($moduleName).help.txt" -Value $aboutHelpContent -Encoding UTF8
     
     #--- Build ReadMe
     $readmeStart = Get-Content -path "$templatePath\ReadMe.md" -raw
     $readmeStart = $readmeStart -replace '%%ModuleName%%', $moduleName
     $readmeStart = $readmeStart -replace '%%MinimumPSVersion%%', $MinimumPSVersion
-    New-Item -path "$path\$moduleName\ReadMe.md" -ItemType File -Value $readmeStart
+    Set-Content -path "$path\$moduleName\ReadMe.md" -Value $readmeStart -Encoding UTF8
     
     #--- Build Changes
     $changesStart = Get-Content -path "$templatePath\Changes.txt" -raw
     $changesStart = $changesStart -replace '%%DATE%%',$dateYMD
     $changesStart = $changesStart -replace '%%Version%%',$version
-    New-Item -path "$path\$moduleName\Changes.txt" -ItemType File -Value $changesStart
+    Set-Content -path "$path\$moduleName\Changes.txt" -Value $changesStart -Encoding UTF8
     
     #--- Build starter functions
     $functionSkeleton = Get-Content -path "$templatePath\functionSample.ps1" -raw
-    New-Item -path "$path\$moduleName\public\functionToExport.ps1" -ItemType File -Value $functionSkeleton
-    New-Item -path "$path\$moduleName\private\functionNotToExport.ps1" -ItemType File -Value $functionSkeleton
+    Set-Content -path "$path\$moduleName\public\functionToExport.ps1" -Value $functionSkeleton -Encoding UTF8
+    Set-Content -path "$path\$moduleName\private\functionNotToExport.ps1" -Value $functionSkeleton -Encoding UTF8
+    
+    #--- Build starter tests
+    $testSkeleton = Get-Content -path "$templatePath\testSample.tests.ps1" -raw
+    $testSkeleton = $testSkeleton -replace "%%FUNCTION_NAME%%","Verb-Noun"
+    Set-Content -path "$path\$moduleName\tests\functionsToExport.tests.ps1" -Value $testSkeleton -Encoding UTF8
+    Set-Content -path "$path\$moduleName\tests\functionsNotToExport.tests.ps1" -Value $testSkeleton -Encoding UTF8
     
     #--- Build empty docs for starter functions
+    Set-Content -path "$path\$moduleName\docs\functionToExport.md" -Value "" -Encoding UTF8
+    Set-Content -path "$path\$moduleName\docs\functionNotToExport.md" -Value "" -Encoding UTF8
     
-    New-Item -path "$path\$moduleName\docs\functionToExport.md" -ItemType File
-    New-Item -path "$path\$moduleName\docs\functionNotToExport.md" -ItemType File
+    #--- Create manifest
     
-    
-    
-    <#
-    folder/ file out:
-    
-    .\ModuleName
+    $newGuid = [GUID]::NewGuid().Guid
+    $manifestContent = @"
+@{
+RootModule = '$moduleName.psm1'
 
-        .\tests
-            functionToExport.tests.ps1
-            ...
+ModuleVersion = '$versionAsString'
+
+GUID = '$newGuid'
+
+Author = '$author'
+
+Copyright = '$licenseShort, $dateYear'
+
+PowerShellVersion = '$MinimumPSVersion'
+
+PowerShellHostVersion = '$MinimumPSVersion'
+
+Description = '$description'
+
+FunctionsToExport = @()
+
+PrivateData = @{
+    
+    PSData = @{
         
-        ModuleName.psd1
+        Tags = @('PSModule', 'verb-noun' )
+        
+        LicenseURI = '$licenseURI'
+        
+        ProjectURI = ''
+        
+        ReleaseNotes = `@`'
 
-    #---
-    moduleManifest:
+$changesStart
+        
+`'`@
+    }
     
-rootModule
+}
 
-# old - moduleToProcess
-
-description
-moduleVersion
-
-
-guid
-author
-copyright $licenseShort
-
-powershellVersion
-powershellHostVersion
-
-functionsToExport
-cmdletsToExport
-AliasesToExport
-
-PrivateData
-    PSData
-        Tags
-        LicenseURI
-        ProjectURI
-        ReleaseNotes
-
-    #>
+}    
     
+"@
+        
+    Set-Content -path "$path\$moduleName\$moduleName.psd1" -Value $manifestContent -Encoding UTF8
+
 }
