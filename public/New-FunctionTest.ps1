@@ -42,10 +42,13 @@ SOFTWARE.
 
 #### Name:       New-FunctionTest
 #### Author:     Jim Schell
-#### Version:    0.1.1
+#### Version:    0.1.2
 #### License:    MIT
 
 ### Change Log
+
+###### 2016-06-07::0.1.2
+- basic check includes validation of output type, if an output type has been defined
 
 ###### 2016-06-06::0.1.1
 - significant whack-a-mole process for validating all the here-strings are properly escaped...
@@ -115,7 +118,8 @@ Describe "%%FUNCTION_NAME%%" {
     # $pathToTemplateTest = "$psScriptRoot\Templates\FunctionName.tests.ps1"
     # $starterTest = Get-Content -path $pathToTemplateTest -raw
     
-    $functionParameters = (Get-Command $($functionName) ).Parameters.Values
+    $functionInMemory = (Get-Command $($functionName) )
+    $functionParameters = $functionInMemory.Parameters.Values
     $commonParameters = (Get-Command Get-CommonParameter).Parameters.Keys
 
     if( $functionParameters.count -gt $commonParameters.count){
@@ -128,7 +132,8 @@ Describe "%%FUNCTION_NAME%%" {
     $functionParametersUnique = $functionParameters | Where-Object {$_.Name -notIn $commonParameters}
     
     $paramBasicAddToTest = $null
-    $paramExpectedAddToTest = $null
+    $expectedAddToTest = $null
+    $paramMandatory = $null
     
     foreach($parameter in $functionParametersUnique){
         $parameterName = $parameter.Name
@@ -144,20 +149,39 @@ Describe "%%FUNCTION_NAME%%" {
 
 "@
         $paramBasicAddToTest += $paramBasicTest
+        if( $isMandatory ){
+            $paramMandatory += "-$($parameterName) "
+        }
+    }
+    
+    if( $functionInMemory.OutputType ){
+        $expectedTest = @"
         
-        $paramExpectedTest = @"
-        
-        It 'Parameter $parameterName should behave like this'{
-        #Blank on purpose, to be filled by humans
+        It '`$functionName should return an object of `$function.OutputType.Name Type'{
+            `$result = `$functionName `$paramMandatory 
+            `$result.GetType().FullName | Should Be `$function.OutputType.Name
         }
       
 "@
-        $paramExpectedAddToTest += $paramExpectedTest
     }
+    else {
+        $expectedTest = @"
+        
+        It '`$functionName should do this'{
+            # Defined by user
+        }
+      
+"@
+    
+    }
+    
+    $expectedAddToTest += $expectedTest
 
+
+    
     $starterTest = $starterTest -replace "%%FUNCTION_NAME%%",$FunctionName
     $starterTest = $starterTest -replace "%%ParamBasics%%",$paramBasicAddToTest
-    $starterTest = $starterTest -replace "%%ExpectedBehavior%%",$paramExpectedAddToTest
+    $starterTest = $starterTest -replace "%%ExpectedBehavior%%",$expectedAddToTest
     $starterTest = $starterTest -replace "%%DATE%%",$dateYMD
     
     $starterTest
