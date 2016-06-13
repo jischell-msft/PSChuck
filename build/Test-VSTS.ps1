@@ -11,7 +11,7 @@
 $tempFile = Join-Path $env:TEMP pester.zip 
 Invoke-WebRequest https://github.com/pester/Pester/archive/master.zip -OutFile $tempFile 
 [System.Reflection.Assembly]::LoadWithPartialName('System.IO.Compression.FileSystem') | Out-Null 
-[System.IO.Compression.ZipFile]::ExtractToDirectory($tempFile, $tempDir) 
+[System.IO.Compression.ZipFile]::ExtractToDirectory($tempFile, $env:TEMP) 
 Remove-Item $tempFile
 Import-Module $env:TEMP\Pester-master\Pester.psm1
 
