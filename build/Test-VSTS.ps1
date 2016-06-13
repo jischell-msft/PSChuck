@@ -28,7 +28,7 @@ Else {
 #>
 
 $ResultsPesterPath = "$env:COMMON_TESTRESULTSDIRECTORY\Test-Pester.xml"
-$ResultsPester = Invoke-Pester -PassThru -Outputformat nunitxml -Outputfile $ResultsPesterPath
+$ResultsPester = Invoke-Pester $psScriptRoot\Tests\* -PassThru -Outputformat nunitxml -Outputfile $ResultsPesterPath
 If ($ResultsPester) {
     $ResultPesterString = $ResultsPester | Out-String
     Write-Warning $ResultPesterString
