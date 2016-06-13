@@ -164,8 +164,10 @@ SOFTWARE.
         
         [Parameter(Mandatory = $true)]
         [ValidateScript({
-            $licenseDir = "$psScriptRoot\LICENSE"
+            $licenseDir = "$psScriptRoot\..\LICENSE"
+            Write-Verbose "$($licenseDir)"
             $licenseList = @(get-childItem -path $licenseDir -filter "LICENSE_*.psd1")
+            Write-Verbose "$($licenseList)"
             $licenseSet = @()
             foreach($license in $licenseList){
                 $name = $license.baseName
