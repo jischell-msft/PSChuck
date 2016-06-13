@@ -81,23 +81,23 @@ SOFTWARE.
 #>
 
 
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess = $True)]
     Param(
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $True)]
         [String]
         $ModuleName,
         
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $True)]
         [String]
         $Author,
         
-        [Parameter(Mandatory = $false)]
+        [Parameter(Mandatory = $False)]
         [System.Version]
         $Version = "0.1.0",
         
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $True)]
         [ValidateScript({
-            $licenseDir = "$psScriptRoot\LICENSE"
+            $licenseDir = "$psScriptRoot\..\LICENSE"
             $licenseList = @(get-childItem -path $licenseDir -filter "LICENSE_*.psd1")
             $licenseSet = @()
             foreach($license in $licenseList){
@@ -107,7 +107,7 @@ SOFTWARE.
             }
             
             if($licenseSet -contains $_ ){
-                return $true
+                return $True
             }
             $msgLicenseNotValid = "`'$_`' did not match the expected set of licenses. Please choose " +
                 "from one of the following licenses: `n"
@@ -119,92 +119,94 @@ SOFTWARE.
         [String]
         $License = "MIT",
 
-        [Parameter(Mandatory = $false)]
+        [Parameter(Mandatory = $False)]
         [int]
-        $MinimumPSVersion = 3
+        $MinimumPSVersion = 3,
         
-        [Parameter(Mandatory = $false)]
+        [Parameter(Mandatory = $False)]
         [String]
         $Description,
         
-        [Parameter(Mandatory = $false)]
+        [Parameter(Mandatory = $False)]
         $Path = $pwd
     )
     
-    $dateYear = get-date -UFormat %Y
-    $versionAsString = $version.toString()
     
-    $defaultOutFileParam = @{
-        Encoding = 'UTF8'
-        Force = $false
-        NoClobber = $true
-    }
-    
-    $foldersToCreate = @(
-        "$path\$moduleName"
-        "$path\$moduleName\en-us"
-        "$path\$moduleName\docs"
-        "$path\$moduleName\build"
-        "$path\$moduleName\private"
-        "$path\$moduleName\public"
-        "$path\$moduleName\tests"
+    Begin {
         
-    )
-    foreach($folder in $foldersToCreate){
-        New-Item -Path $folder -ItemType Directory
+        $dateYear = get-date -UFormat %Y
+        $versionAsString = $version.toString()
+        
+        $licenseDir = "$psScriptRoot\..\LICENSE"
+        $TemplatePath = "$psScriptRoot\..\Templates"
+    
+        $foldersToCreate = @(
+            "$path\$moduleName"
+            "$path\$moduleName\en-us"
+            "$path\$moduleName\docs"
+            "$path\$moduleName\build"
+            "$path\$moduleName\private"
+            "$path\$moduleName\public"
+            "$path\$moduleName\tests"
+        )
+        
+        #--- Getting license details...        
+        $licenseFull = Import-LocalizedData -baseDirectory $licenseDir -fileName "LICENSE_$($licence).psd1"
+        $licenseContent = $licenseFull.licenseContent
+        $licenseContent = $licenseContent -replace '%%YEAR%%',$dateYear
+        $licenseContent = $licenseContent -replace '%%AUTHOR%%',$author
+        $licenseName = $($licenseFull.licenseName)
+        $licenseURI = $($licenseFull.licenseURI)
+        
     }
     
-    $templatePath = "$psScriptRoot\templates"
-    
-    #--- Copy module with appropriate name
-    Set-Content -path "$path\$moduleName\$($moduleName).psm1" -Value "$templatePath\ModuleName.psm1" -Encoding UTF8
-    
-    #--- Getting license details...
-    $licenseFull = Import-LocalizedData -baseDirectory "$psScriptRoot\LICENSE" -fileName "LICENSE_$($licence).psd1"
-    $licenseContent = $licenseFull.licenseContent
-    $licenseContent = $licenseContent -replace '%%YEAR%%',$dateYear
-    $licenseContent = $licenseContent -replace '%%AUTHOR%%',$author
-    $licenseName = $licenseFull.licenseName
-    $licenseURI = $licenseFull.licenseURI
-    
-    Set-Content -path "$path\$moduleName\LICENSE.txt" -Value $licenseContent -Encoding UTF8
-    
-    #--- Building About_Help
-    $aboutHelpContent = Get-Content -path "$templatePath\about_ModuleName.help.txt"
-    $aboutHelpContent = $aboutHelpContent -replace '%%MODULE_NAME%%', $moduleName
-    Set-Content -path "$path\$moduleName\en-us\about_$($moduleName).help.txt" -Value $aboutHelpContent -Encoding UTF8
-    
-    #--- Build ReadMe
-    $readmeStart = Get-Content -path "$templatePath\ReadMe.md" -raw
-    $readmeStart = $readmeStart -replace '%%ModuleName%%', $moduleName
-    $readmeStart = $readmeStart -replace '%%MinimumPSVersion%%', $MinimumPSVersion
-    Set-Content -path "$path\$moduleName\ReadMe.md" -Value $readmeStart -Encoding UTF8
-    
-    #--- Build Changes
-    $changesStart = Get-Content -path "$templatePath\Changes.txt" -raw
-    $changesStart = $changesStart -replace '%%DATE%%',$dateYMD
-    $changesStart = $changesStart -replace '%%Version%%',$version
-    Set-Content -path "$path\$moduleName\Changes.txt" -Value $changesStart -Encoding UTF8
-    
-    #--- Build starter functions
-    $functionSkeleton = Get-Content -path "$templatePath\functionSample.ps1" -raw
-    Set-Content -path "$path\$moduleName\public\functionToExport.ps1" -Value $functionSkeleton -Encoding UTF8
-    Set-Content -path "$path\$moduleName\private\functionNotToExport.ps1" -Value $functionSkeleton -Encoding UTF8
-    
-    #--- Build starter tests
-    $testSkeleton = Get-Content -path "$templatePath\testSample.tests.ps1" -raw
-    $testSkeleton = $testSkeleton -replace "%%FUNCTION_NAME%%","Verb-Noun"
-    Set-Content -path "$path\$moduleName\tests\functionsToExport.tests.ps1" -Value $testSkeleton -Encoding UTF8
-    Set-Content -path "$path\$moduleName\tests\functionsNotToExport.tests.ps1" -Value $testSkeleton -Encoding UTF8
-    
-    #--- Build empty docs for starter functions
-    Set-Content -path "$path\$moduleName\docs\functionToExport.md" -Value "" -Encoding UTF8
-    Set-Content -path "$path\$moduleName\docs\functionNotToExport.md" -Value "" -Encoding UTF8
-    
-    #--- Create manifest
-    
-    $newGuid = [GUID]::NewGuid().Guid
-    $manifestContent = @"
+    Process {
+        if($PSCmdlet.ShouldProcess){
+
+            foreach($folder in $foldersToCreate){
+                New-Item -Path $folder -ItemType Directory
+            }
+
+            #--- Copy module with appropriate name
+            Set-Content -path "$path\$moduleName\$($moduleName).psm1" -Value "$templatePath\ModuleName.psm1" -Encoding UTF8
+
+            Set-Content -path "$path\$moduleName\LICENSE.txt" -Value $licenseContent -Encoding UTF8
+            
+            #--- Building About_Help
+            $aboutHelpContent = Get-Content -path "$templatePath\about_ModuleName.help.txt"
+            $aboutHelpContent = $aboutHelpContent -replace '%%MODULE_NAME%%', $moduleName
+            Set-Content -path "$path\$moduleName\en-us\about_$($moduleName).help.txt" -Value $aboutHelpContent -Encoding UTF8
+            
+            #--- Build ReadMe
+            $readmeStart = Get-Content -path "$templatePath\ReadMe.md" -raw
+            $readmeStart = $readmeStart -replace '%%ModuleName%%', $moduleName
+            $readmeStart = $readmeStart -replace '%%MinimumPSVersion%%', $MinimumPSVersion
+            Set-Content -path "$path\$moduleName\ReadMe.md" -Value $readmeStart -Encoding UTF8
+            
+            #--- Build Changes
+            $changesStart = Get-Content -path "$templatePath\Changes.txt" -raw
+            $changesStart = $changesStart -replace '%%DATE%%',$dateYMD
+            $changesStart = $changesStart -replace '%%Version%%',$version
+            Set-Content -path "$path\$moduleName\Changes.txt" -Value $changesStart -Encoding UTF8
+            
+            #--- Build starter functions
+            $functionSkeleton = Get-Content -path "$templatePath\functionSample.ps1" -raw
+            Set-Content -path "$path\$moduleName\public\functionToExport.ps1" -Value $functionSkeleton -Encoding UTF8
+            Set-Content -path "$path\$moduleName\private\functionNotToExport.ps1" -Value $functionSkeleton -Encoding UTF8
+            
+            #--- Build starter tests
+            $testSkeleton = Get-Content -path "$templatePath\testSample.tests.ps1" -raw
+            $testSkeleton = $testSkeleton -replace "%%FUNCTION_NAME%%","Verb-Noun"
+            Set-Content -path "$path\$moduleName\tests\functionsToExport.tests.ps1" -Value $testSkeleton -Encoding UTF8
+            Set-Content -path "$path\$moduleName\tests\functionsNotToExport.tests.ps1" -Value $testSkeleton -Encoding UTF8
+            
+            #--- Build empty docs for starter functions
+            Set-Content -path "$path\$moduleName\docs\functionToExport.md" -Value "" -Encoding UTF8
+            Set-Content -path "$path\$moduleName\docs\functionNotToExport.md" -Value "" -Encoding UTF8
+        
+            #--- Create manifest
+            $newGuid = [GUID]::NewGuid().Guid
+            $manifestContent = @"
 @{
 RootModule = '$moduleName.psm1'
 
@@ -214,7 +216,7 @@ GUID = '$newGuid'
 
 Author = '$author'
 
-Copyright = '$licenseShort, $dateYear'
+Copyright = '$licenseName, $dateYear'
 
 PowerShellVersion = '$MinimumPSVersion'
 
@@ -247,6 +249,12 @@ $changesStart
     
 "@
         
-    Set-Content -path "$path\$moduleName\$moduleName.psd1" -Value $manifestContent -Encoding UTF8
+            Set-Content -path "$path\$moduleName\$moduleName.psd1" -Value $manifestContent -Encoding UTF8
+        }
+    
+    }
 
+    End {
+    }
+    
 }

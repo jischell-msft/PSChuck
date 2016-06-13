@@ -8,9 +8,9 @@
 # 
 # help.%%FUNCTION_NAME%%.tests.ps1
 
-$functionName = "new-function"
+$functionName = "New-Function"
 
-. "$($psScriptRoot)\$($functionName).ps1"
+. "$($psScriptRoot)\..\public\$($functionName).ps1"
 
 $parameters = (Get-Command -Name $functionName).ParameterSets.Parameters | 
     Sort-Object -Property Name -Unique | Where-Object {$_.name -notIn $commonParam}
@@ -92,23 +92,23 @@ Describe "Test help for $functionName" {
         $notes = @(($help.AlertSet.Alert.Text) -split '\n')
         
         It "Notes attribute `'name`' should contain $functionName" {
-            $notesName = $notes | Select-String -pattern "^Name:*"
-            $notesName | Should Match "^Name:\s*$($functionName)"
+            $notesName = $notes | Select-String -pattern "Name:\s*"
+            $notesName | Should Match "Name:\s*$($functionName)"
         }
         
         It "Notes attribute `'author`' should exist" {
-            $notesAuthor = $notes | Select-String -pattern "^Author:"
-            $notesAuthor | Should Match "^Author:*"
+            $notesAuthor = $notes | Select-String -pattern "Author:"
+            $notesAuthor | Should Match "Author:*"
         }
         
         It "Notes attribute `'version`' should be in System.Version format" {
-            $notesVersion = $notes | Select-String -pattern "^Version:"
-            $notesVersion | Should Match '^Version:\s*(\d{1,9}\.){2,4}'
+            $notesVersion = $notes | Select-String -pattern "Version:"
+            $notesVersion | Should Match 'Version:\s*(\d{1,9}\.){2,4}'
         }
         
         It "Notes attribute `'license`' should exist" {
-            $notesLicense = $notes | Select-String -pattern "^License:"
-            $notesLicense | Should Match '^License:*'
+            $notesLicense = $notes | Select-String -pattern "License:"
+            $notesLicense | Should Match 'License:*'
         }
         
     }
