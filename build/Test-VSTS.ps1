@@ -29,7 +29,7 @@ Else {
 
 $ResultsPesterPath = "$env:TEMP\Test-Pester.xml"
 $ResultsPester = Invoke-Pester $psScriptRoot\..\Tests\* -PassThru -Outputformat nunitxml -Outputfile $ResultsPesterPath
-If ($ResultsPester) {
+If ($ResultsPester.Failed.Count -ge 1) {
     $ResultPesterString = $ResultsPester | Out-String
     Write-Warning $ResultPesterString
     Throw "$($ResultPesterString)"
