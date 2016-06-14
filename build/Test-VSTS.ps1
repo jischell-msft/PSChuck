@@ -5,7 +5,7 @@
 # Install-Module -Name PsScriptAnalyzer -Scope CurrentUser -Force
 # Install-Module -Name Pester -Scope CurrentUser -Force
 
-
+# Need to find way to load psScriptAnalyzer...
 
 
 $tempFile = Join-Path $env:TEMP pester.zip 
