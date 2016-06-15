@@ -91,7 +91,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 
-#### Name:       new-function
+#### Name:       New-Function
 #### Author:     Jim Schell
 #### Version:    0.1.9
 #### License:    MIT

@@ -1,4 +1,4 @@
-function update-moduleManifest {
+function Update-ModuleManifest {
 <#
 
 .Notes
@@ -25,7 +25,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 
-#### Name:       new-module
+#### Name:       Update-ModuleManifest
 #### Author:     Jim Schell
 #### Version:    0.1.0
 #### License:    MIT

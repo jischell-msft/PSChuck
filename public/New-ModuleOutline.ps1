@@ -60,10 +60,13 @@ SOFTWARE.
 
 #### Name:       New-ModuleOutline
 #### Author:     Jim Schell
-#### Version:    0.1.4
+#### Version:    0.1.5
 #### License:    MIT
 
 ### Change Log
+
+###### 2016-06-15::0.1.5
+- updated to format minimum ps version to system.version format
 
 ###### 2016-06-15::0.1.4
 - prior first pass missed a few key sections (variables named the same, etc... o_O)
@@ -123,8 +126,8 @@ SOFTWARE.
         $License = "MIT",
 
         [Parameter(Mandatory = $False)]
-        [int]
-        $MinimumPSVersion = 3,
+        [System.Version]
+        $MinimumPSVersion = "3.0",
         
         [Parameter(Mandatory = $False)]
         [String]
@@ -139,6 +142,7 @@ SOFTWARE.
         
         $dateYear = get-date -UFormat %Y
         $versionAsString = $version.toString()
+        $MinimumPSVersionAsString = $MinimumPSVersion.toString()
         
         $licenseDir = "$psScriptRoot\..\LICENSE"
         $TemplatePath = "$psScriptRoot\..\Templates"
@@ -220,9 +224,9 @@ Author = '$author'
 
 Copyright = '$licenseName, $dateYear'
 
-PowerShellVersion = '$MinimumPSVersion'
+PowerShellVersion = '$MinimumPSVersionAsString'
 
-PowerShellHostVersion = '$MinimumPSVersion'
+PowerShellHostVersion = '$MinimumPSVersionAsString'
 
 Description = '$description'
 
@@ -250,10 +254,7 @@ $changesStart
 }    
 
 "@
-    
         Set-Content -path "$path\$moduleName\$moduleName.psd1" -Value $manifestContent -Encoding UTF8
-    
-    
     }
 
     End {
