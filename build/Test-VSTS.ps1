@@ -16,7 +16,7 @@ Remove-Item $tempFile
 Import-Module $env:TEMP\Pester-master\Pester.psm1
 
 $ResultsPesterPath = "$env:TEMP\Test-Pester.xml"
-$ResultsPester = Invoke-Pester $psScriptRoot\..\Tests\* -PassThru -Outputformat nunitxml -Outputfile $ResultsPesterPath
+$ResultsPester = Invoke-Pester $psScriptRoot\..\Tests\* -PassThru -Outputformat nunitxml -Outputfile $ResultsPesterPath -ErrorAction SilentlyContinue
 If ($ResultsPester.Failed.Count -ge 1) {
     $ResultPesterString = $ResultsPester | Out-String
     Write-Warning $ResultPesterString
@@ -35,7 +35,7 @@ Remove-Item $tempFile
 Import-Module $env:TEMP\PSSA-Release-master\PsScriptAnalyzer.psm1
 
 
-$ResultsPSSA = Invoke-ScriptAnalyzer -Path $pwd -Recurse -Severity Error -ErrorAction SilentlyContinue
+$ResultsPSSA = Invoke-ScriptAnalyzer -Path $pwd -Recurse -Severity Warning -ErrorAction SilentlyContinue
 If ($ResultsPSSA) {
     $ResultPSSAString = $ResultsPSSA | Out-String
     Write-Warning $ResultPSSAString
