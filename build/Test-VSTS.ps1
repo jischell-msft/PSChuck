@@ -15,18 +15,6 @@ Invoke-WebRequest https://github.com/pester/Pester/archive/master.zip -OutFile $
 Remove-Item $tempFile
 Import-Module $env:TEMP\Pester-master\Pester.psm1
 
-<#
-$ResultsPSSA = Invoke-ScriptAnalyzer -Path $pwd -Recurse -Severity Error -ErrorAction SilentlyContinue
-If ($ResultsPSSA) {
-    $ResultPSSAString = $ResultsPSSA | Out-String
-    Write-Warning $ResultPSSAString
-    Throw "$($ResultPSSAString)"
-}
-Else {
-    Return $True
-}
-#>
-
 $ResultsPesterPath = "$env:TEMP\Test-Pester.xml"
 $ResultsPester = Invoke-Pester $psScriptRoot\..\Tests\* -PassThru -Outputformat nunitxml -Outputfile $ResultsPesterPath
 If ($ResultsPester.Failed.Count -ge 1) {
@@ -37,3 +25,24 @@ If ($ResultsPester.Failed.Count -ge 1) {
 Else {
     Return $True
 }
+
+
+$tempFile = Join-Path $env:TEMP PSSA.zip 
+Invoke-WebRequest https://github.com/jischell-msft/PSSA-Release/archive/master.zip -OutFile $tempFile 
+[System.Reflection.Assembly]::LoadWithPartialName('System.IO.Compression.FileSystem') | Out-Null 
+[System.IO.Compression.ZipFile]::ExtractToDirectory($tempFile, $env:TEMP) 
+Remove-Item $tempFile
+Import-Module $env:TEMP\PSSA-Release-master\PsScriptAnalyzer.psm1
+
+
+$ResultsPSSA = Invoke-ScriptAnalyzer -Path $pwd -Recurse -Severity Error -ErrorAction SilentlyContinue
+If ($ResultsPSSA) {
+    $ResultPSSAString = $ResultsPSSA | Out-String
+    Write-Warning $ResultPSSAString
+    Throw "$($ResultPSSAString)"
+}
+Else {
+    Return $True
+}
+
+
