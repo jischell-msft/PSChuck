@@ -12,14 +12,29 @@ function Verb-Noun {
    Inputs to this cmdlet (if any)
 .OUTPUTS
    Output from this cmdlet (if any)
-.NOTES
-   General notes
 .COMPONENT
    The component this cmdlet belongs to
 .ROLE
    The role this cmdlet belongs to
 .FUNCTIONALITY
    The functionality that best describes this cmdlet
+
+.Parameter Param1
+Specifies Param1
+
+.Parameter Param2
+Specifies Param2
+
+.Parameter Param3
+Specifies Param3
+   
+.NOTES
+
+Name:       Verb-Noun
+Author:     
+Version:    0.1.0
+License:    
+
 #>
 
 

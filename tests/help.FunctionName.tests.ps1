@@ -71,23 +71,22 @@ SOFTWARE.
 
 #>
 
-if($psScriptRoot -match ("\\Test|\\Tests") ) {
-    $functionList = Get-ChildItem -path "$psScriptRoot\..\" -filter "*.ps1" -exclude "*tests.ps1","Templates",".*" -recurse
+$TestDir = $psScriptRoot
+
+if($TestDir -match ("\\Test|\\Tests") ){
+    $ParentDir = Resolve-Path "$TestDir\.."
 }
 else {
-    $functionList = Get-ChildItem -path $psScriptRoot -filter "*.ps1" -exclude "*tests.ps1","Templates",".*" -recurse
+    $ParentDir = $TestDir
 }
 
-foreach($result in $functionList){
-    Write-Output $($result.BaseName)
-}
-
+$functionList = Get-ChildItem -path $ParentDir -filter "*.ps1" -exclude "*tests.ps1","Templates" -recurse
 
 foreach($function in $functionList){
     . "$($function.FullName)"
     $functionName = "$($function.BaseName)"
     
-    $Help = Get-Help $functionName -ErrorAction SilentlyContinue
+    $Help = Get-Help -Name $functionName -Online:$false -ErrorAction SilentlyContinue
 
     Describe "Test help for $functionName" {
 
