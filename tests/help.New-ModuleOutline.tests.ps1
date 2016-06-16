@@ -72,7 +72,7 @@ SOFTWARE.
 #>
 
 
-$functionName = "New-Function"
+$functionName = "New-ModuleOutline"
 $functionPath = Get-ChildItem -Path "$psScriptRoot\.." -Filter "$($functionName).ps1" -Recurse
 . "$($functionPath.FullName)"
 
@@ -146,13 +146,13 @@ Describe "Test help for $functionName" {
         }
     }
     
-    # Notes should exist, contain name of function, author, version, and license
+     # Notes should exist, contain name of function, author, version, and license
     Context "Test notes for `'$functionName`'" {
         
         $notes = @(($help.AlertSet.Alert.Text) -split '\n')
         
         It "Notes attribute `'name`' should contain $functionName" {
-            $notesName = $notes | Select-String -pattern "Name:\s*"
+            $notesName = $notes | Select-String -pattern "Name: *"
             $notesName | Should Match "Name:\s*$($functionName)"
         }
         
@@ -170,7 +170,5 @@ Describe "Test help for $functionName" {
             $notesLicense = $notes | Select-String -pattern "License:"
             $notesLicense | Should Match 'License:*'
         }
-        
     }
-    
 }

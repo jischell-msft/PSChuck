@@ -87,7 +87,7 @@ SOFTWARE.
 #>
 
 
-    [CmdletBinding(SupportsShouldProcess = $True)]
+    [CmdletBinding()]
     Param(
         [Parameter(Mandatory = $True)]
         [String]
